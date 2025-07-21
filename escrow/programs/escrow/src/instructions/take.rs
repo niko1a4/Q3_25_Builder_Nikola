@@ -88,11 +88,26 @@ impl <'info> Take<'info>{
             &self.escrow.seed.to_le_bytes(),
             &[self.escrow.bump],
         ]];
+        let cpi_accounts = TransferChecked{
+            from: self.vault.to_account_info(),
+            mint: self.mint_a.to_account_info(),
+            to: self.taker_ata_a.to_account_info(),
+            authority:self.escrow.to_account_info(),
+        };
+        let cpi_ctx = CpiContext::new_with_signer(program, cpi_accounts, &signer_seeds);
+        transfer_checked(cpi_ctx, self.vault.amount, self.mint_a.decimals)?;
+        let program = self.token_program.to_account_info();
+        let signer_seeds:[&[&[u8]];1] = [&[
+            b"escrow",
+            self.maker.to_account_info().key.as_ref(),
+            &self.escrow.seed.to_le_bytes(),
+            &[self.escrow.bump],
+        ]];
         let accounts = CloseAccount { 
             account: self.vault.to_account_info(),
-             destination: self.maker.to_account_info(),
-              authority: self.escrow.to_account_info(),
-             };
+            destination: self.maker.to_account_info(),
+            authority: self.escrow.to_account_info(),
+            };
         let cpi_ctx = CpiContext::new_with_signer(program, accounts, &signer_seeds);
         close_account(cpi_ctx)?;
         Ok(())
