@@ -14,7 +14,7 @@ import {
   getMint,
   mintTo,
 } from "@solana/spl-token";
-import { Amm3 } from "../target/types/amm3"; // prilagodi ako se drugačije zove
+import { Amm3 } from "../target/types/amm3";
 import { expect } from "chai";
 
 describe("initialize AMM", () => {
